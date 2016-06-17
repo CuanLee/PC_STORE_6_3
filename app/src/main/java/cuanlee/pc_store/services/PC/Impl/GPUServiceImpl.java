@@ -62,7 +62,7 @@ public class GPUServiceImpl extends Service implements GPUService {
 
         for (GPU gpuRecord: allGpu)
         {
-            if (gpu.getCode().equalsIgnoreCase(gpuRecord.getCode()) && !gpu.getId().equals(gpuRecord.getId()))
+            if (gpu.getCode().equalsIgnoreCase(gpuRecord.getCode()))
                 duplicate = true;
         }
         return duplicate;

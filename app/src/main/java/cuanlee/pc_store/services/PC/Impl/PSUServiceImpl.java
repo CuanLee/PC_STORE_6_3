@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import java.util.ArrayList;
 import java.util.Set;
 
+import cuanlee.pc_store.database.database.GlobalContext;
 import cuanlee.pc_store.database.util.App;
 import cuanlee.pc_store.domain.PC.PSU;
 import cuanlee.pc_store.repository.PC.Impl.PSURepositoryImpl;
@@ -19,8 +21,14 @@ import cuanlee.pc_store.services.PC.PSUService;
  */
 public class PSUServiceImpl extends Service implements PSUService {
     final private PSURepository psuRepository;
-
     private static PSUServiceImpl service = null;
+
+    public PSUServiceImpl()
+    {
+        psuRepository = new PSURepositoryImpl(GlobalContext.getAppContext());
+    }
+
+    private final IBinder localBinder = new ActivateServiceLocalBinder();
 
     public static PSUServiceImpl getInstance() {
         if (service == null)
@@ -28,18 +36,10 @@ public class PSUServiceImpl extends Service implements PSUService {
         return service;
     }
 
-    private final IBinder localBinder = new ActivateServiceLocalBinder();
-
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         return localBinder;
-    }
-
-    public class PSUServiceLocalBinder extends Binder {
-        public PSUServiceImpl getService() {
-            return PSUServiceImpl.this;
-        }
     }
 
     public class ActivateServiceLocalBinder extends Binder {
@@ -48,25 +48,20 @@ public class PSUServiceImpl extends Service implements PSUService {
         }
     }
 
-    private PSUServiceImpl()
-    {
-        psuRepository = new PSURepositoryImpl(App.getAppContext());
-    }
+
 
     @Override
     public PSU addPsu(PSU psu) {
-        if(duplicateCheck(psu) == false)
+
             return psuRepository.save(psu);
-        else
-            return null;
+
     }
 
     @Override
     public PSU updatePsu(PSU psu) {
-        if(duplicateCheck(psu) == false)
+
             return psuRepository.update(psu);
-        else
-            return null;
+
     }
 
     @Override
@@ -87,7 +82,7 @@ public class PSUServiceImpl extends Service implements PSUService {
     }
 
     @Override
-    public int deleteAllRam() {
+    public int deleteAllPSU() {
         return psuRepository.deleteAll();
     }
 
@@ -98,9 +93,35 @@ public class PSUServiceImpl extends Service implements PSUService {
 
         for (PSU psuRecord: allPsu)
         {
-            if (psu.getCode().equalsIgnoreCase(psuRecord.getCode()) && !psu.getId().equals(psuRecord.getId()))
+            if (psu.getCode().equalsIgnoreCase(psuRecord.getCode()))
                 duplicate = true;
         }
         return duplicate;
+    }
+
+    @Override
+    public ArrayList<PSU> getAllActive() {
+        Set<PSU> allPsu = psuRepository.findAll();
+        ArrayList<PSU> allActiveRecords = new ArrayList<>();
+
+        for (PSU psuRecord: allPsu)
+        {
+            if (psuRecord.isActive().intValue() == 1)
+                allActiveRecords.add(psuRecord);
+        }
+        return allActiveRecords;
+    }
+
+    @Override
+    public ArrayList<PSU> getByWatts(int watts) {
+        Set<PSU> allPsu = psuRepository.findAll();
+        ArrayList<PSU> allRecords = new ArrayList<>();
+
+        for (PSU psuRecord: allPsu)
+        {
+            if (psuRecord.getWatts().intValue() == watts)
+                allRecords.add(psuRecord);
+        }
+        return allRecords;
     }
 }

@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import java.util.ArrayList;
 import java.util.Set;
 
+import cuanlee.pc_store.database.database.GlobalContext;
 import cuanlee.pc_store.database.util.App;
 import cuanlee.pc_store.domain.PC.Motherboard;
 import cuanlee.pc_store.repository.PC.Impl.MotherboardRepositoryImpl;
@@ -19,16 +21,20 @@ import cuanlee.pc_store.services.PC.MotherboardService;
  */
 public class MotherboardServiceImpl extends Service implements MotherboardService {
     final private MotherboardRepository motherboardRepository;
-
     private static MotherboardServiceImpl service = null;
+
+    public MotherboardServiceImpl()
+    {
+        motherboardRepository = new MotherboardRepositoryImpl(GlobalContext.getAppContext());
+    }
+
+    private final IBinder localBinder = new ActivateServiceLocalBinder();
 
     public static MotherboardServiceImpl getInstance() {
         if (service == null)
             service = new MotherboardServiceImpl();
         return service;
     }
-
-    private final IBinder localBinder = new ActivateServiceLocalBinder();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -42,17 +48,11 @@ public class MotherboardServiceImpl extends Service implements MotherboardServic
         }
     }
 
-    private MotherboardServiceImpl()
-    {
-        motherboardRepository = new MotherboardRepositoryImpl(App.getAppContext());
-    }
+
 
     @Override
     public Motherboard addMotherboard(Motherboard motherboard) {
-        if(duplicateCheck(motherboard) == false)
             return motherboardRepository.save(motherboard);
-        else
-            return null;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class MotherboardServiceImpl extends Service implements MotherboardServic
 
         for (Motherboard motherboardRecord: allMotherboard)
         {
-            if (motherboard.getCode().equalsIgnoreCase(motherboardRecord.getCode()) && !motherboard.getId().equals(motherboardRecord.getId()))
+            if (motherboard.getCode().equalsIgnoreCase(motherboardRecord.getCode()))
                 duplicate = true;
         }
         return duplicate;
@@ -71,10 +71,7 @@ public class MotherboardServiceImpl extends Service implements MotherboardServic
 
     @Override
     public Motherboard updateMotherboard(Motherboard motherboard) {
-        if(duplicateCheck(motherboard) == false)
             return motherboardRepository.update(motherboard);
-        else
-            return null;
     }
 
     @Override
@@ -90,12 +87,32 @@ public class MotherboardServiceImpl extends Service implements MotherboardServic
     }
 
     @Override
-    public Motherboard deleteMotherboard(Motherboard motherboard) {
-        return motherboardRepository.delete(motherboard);
+    public int getTotalStock() {
+        Set<Motherboard> allMobo = motherboardRepository.findAll();
+        int totalStock = 0;
+
+        for (Motherboard moboRecord: allMobo)
+        {
+            totalStock = totalStock + moboRecord.getStock().intValue();
+        }
+        return totalStock;
     }
 
     @Override
-    public int deleteAllMotherboard() {
-        return motherboardRepository.deleteAll();
+    public ArrayList<Motherboard> getAllActive() {
+        Set<Motherboard> allMobo = motherboardRepository.findAll();
+        ArrayList<Motherboard> allActiveRecords = new ArrayList<>();
+
+        for (Motherboard moboRecord: allMobo)
+        {
+            if (moboRecord.isActive().intValue() == 1)
+                allActiveRecords.add(moboRecord);
+        }
+        return allActiveRecords;
+    }
+
+    @Override
+    public Motherboard deleteMobo(Motherboard mobo) {
+        return motherboardRepository.delete(mobo);
     }
 }

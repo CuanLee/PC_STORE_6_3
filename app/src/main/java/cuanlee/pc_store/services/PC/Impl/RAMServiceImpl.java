@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import cuanlee.pc_store.database.database.GlobalContext;
@@ -87,10 +88,25 @@ public class RAMServiceImpl extends Service implements RAMService {
 
         for (RAM ramRecord: allRam)
         {
-            if (ram.getCode().equalsIgnoreCase(ramRecord.getCode()) && !ram.getId().equals(ramRecord.getId()))
+            if (ram.getCode().equalsIgnoreCase(ramRecord.getCode())
+
+                    )
                 duplicate = true;
         }
         return duplicate;
 
+    }
+
+    @Override
+    public ArrayList<RAM> getAllActive() {
+        Set<RAM> allRam = ramRepository.findAll();
+        ArrayList<RAM> allActiveRecords = new ArrayList<>();
+
+        for (RAM ramRecord: allRam)
+        {
+            if (ramRecord.isActive().intValue() == 1)
+                allActiveRecords.add(ramRecord);
+        }
+        return allActiveRecords;
     }
 }

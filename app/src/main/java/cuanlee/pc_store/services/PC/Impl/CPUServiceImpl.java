@@ -62,7 +62,7 @@ public class CPUServiceImpl extends Service implements CPUService {
 
         for (CPU cpuRecord: allCpu)
         {
-            if (cpu.getCode().equalsIgnoreCase(cpuRecord.getCode()) && !cpu.getId().equals(cpuRecord.getId()))
+            if (cpu.getCode().equalsIgnoreCase(cpuRecord.getCode()))
                 duplicate = true;
         }
         return duplicate;

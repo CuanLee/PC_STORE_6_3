@@ -62,7 +62,7 @@ public class HDDServiceImpl extends Service implements HDDService {
 
         for (HDD hddRecord: allHdd)
         {
-            if (hdd.getCode().equalsIgnoreCase(hddRecord.getCode()) && !hdd.getId().equals(hddRecord.getId()))
+            if (hdd.getCode().equalsIgnoreCase(hddRecord.getCode()))
                 duplicate = true;
         }
         return duplicate;

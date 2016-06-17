@@ -1,4 +1,4 @@
-package cuanlee.pc_store.PC;
+package cuanlee.pc_store.ServiceTest.PC;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,6 +9,7 @@ import android.test.AndroidTestCase;
 
 import junit.framework.Assert;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import cuanlee.pc_store.database.database.GlobalContext;
@@ -23,6 +24,7 @@ public class RAMServiceImplTest extends AndroidTestCase {
     private RAMServiceImpl ramService;
     private boolean isBound;
     RAM ram = new RAM();
+    RAM ramNew = new RAM();
     private Long id;
 
     @Override
@@ -34,6 +36,16 @@ public class RAMServiceImplTest extends AndroidTestCase {
         GlobalContext.getAppContext().bindService(intent, connection, Context.BIND_AUTO_CREATE);
         //Create
          ram = new RAM.Builder()
+                .code("vengance")
+                .description("corsair vengance ram")
+                .voltage(400)
+                .memorySize("4GB")
+                .memoryConfiguration("Dula Module")
+                .stock(22)
+                .active(0)
+                .build();
+
+        ramNew = new RAM.Builder()
                 .code("vengance")
                 .description("corsair vengance ram")
                 .voltage(400)
@@ -70,9 +82,17 @@ public class RAMServiceImplTest extends AndroidTestCase {
         Set<RAM> allRam = ramService.getAll();
         Assert.assertTrue(allRam.size()>0);
 
+        //ReadAllActive
+        ArrayList<RAM> allActive = ramService.getAllActive();
+        Assert.assertTrue(allActive.size()>0);
+
         //READ ENTITY
         RAM entity = ramService.getRam(id);
         Assert.assertNotNull(entity);
+
+        //CheckDuplicate
+        boolean duplicate = ramService.duplicateCheck(ramNew);
+        Assert.assertEquals(true,duplicate);
 
         //UPDATE ENTITY
         RAM updateEntity = new RAM.Builder()

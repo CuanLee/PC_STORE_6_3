@@ -62,7 +62,7 @@ public class ChassisServiceImpl extends Service implements ChassisService {
 
         for (Chassis chassisRecord: allChassis)
         {
-            if (chassis.getCode().equalsIgnoreCase(chassisRecord.getCode()) && !chassis.getId().equals(chassisRecord.getId()))
+            if (chassis.getCode().equalsIgnoreCase(chassisRecord.getCode()))
                 duplicate = true;
         }
         return duplicate;

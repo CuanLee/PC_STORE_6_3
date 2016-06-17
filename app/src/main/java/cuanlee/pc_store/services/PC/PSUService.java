@@ -1,8 +1,10 @@
 package cuanlee.pc_store.services.PC;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import cuanlee.pc_store.domain.PC.PSU;
+import cuanlee.pc_store.domain.PC.RAM;
 
 
 /**
@@ -21,5 +23,9 @@ public interface PSUService {
 
     PSU deleteRam(PSU psu);
 
-    int deleteAllRam();
+    ArrayList<PSU> getAllActive();
+
+    ArrayList<PSU> getByWatts(int watts);
+
+    int deleteAllPSU();
 }

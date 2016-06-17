@@ -1,5 +1,6 @@
 package cuanlee.pc_store.services.PC;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import cuanlee.pc_store.domain.PC.Motherboard;
@@ -19,7 +20,9 @@ public interface MotherboardService {
 
     Set<Motherboard> getAll();
 
-    Motherboard deleteMotherboard(Motherboard motherboard);
+    int getTotalStock();
 
-    int deleteAllMotherboard();
+    ArrayList<Motherboard> getAllActive();
+
+    Motherboard deleteMobo(Motherboard ram);
 }

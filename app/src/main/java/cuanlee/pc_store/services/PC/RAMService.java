@@ -1,5 +1,6 @@
 package cuanlee.pc_store.services.PC;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import cuanlee.pc_store.domain.PC.RAM;
@@ -18,6 +19,8 @@ public interface RAMService {
     RAM getRam(Long ramId);
 
     Set<RAM> getAll();
+
+    ArrayList<RAM> getAllActive();
 
     RAM deleteRam(RAM ram);
 
