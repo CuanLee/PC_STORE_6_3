@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import java.util.ArrayList;
 import java.util.Set;
 
+import cuanlee.pc_store.database.database.GlobalContext;
 import cuanlee.pc_store.database.util.App;
 import cuanlee.pc_store.domain.PC.Chassis;
 import cuanlee.pc_store.repository.PC.ChassisRepository;
@@ -44,15 +46,12 @@ public class ChassisServiceImpl extends Service implements ChassisService {
 
     private ChassisServiceImpl()
     {
-        chassisRepository = new ChassisRepositoryImpl(App.getAppContext());
+        chassisRepository = new ChassisRepositoryImpl(GlobalContext.getAppContext());
     }
 
     @Override
     public Chassis addChassis(Chassis chassis) {
-        if(duplicateCheck(chassis) == false)
             return chassisRepository.save(chassis);
-        else
-            return null;
     }
 
     @Override
@@ -70,10 +69,7 @@ public class ChassisServiceImpl extends Service implements ChassisService {
 
     @Override
     public Chassis updateChassis(Chassis chassis) {
-        if(duplicateCheck(chassis) == false)
             return chassisRepository.update(chassis);
-        else
-            return null;
     }
 
     @Override
@@ -96,5 +92,30 @@ public class ChassisServiceImpl extends Service implements ChassisService {
     @Override
     public int deleteAllChassis() {
         return chassisRepository.deleteAll();
+    }
+
+    @Override
+    public int getTotalStock() {
+        Set<Chassis> all = chassisRepository.findAll();
+        int totalStock = 0;
+
+        for (Chassis record: all)
+        {
+            totalStock = totalStock + record.getStock().intValue();
+        }
+        return totalStock;
+    }
+
+    @Override
+    public ArrayList<Chassis> getAllActive() {
+        Set<Chassis> all = chassisRepository.findAll();
+        ArrayList<Chassis> allActiveRecords = new ArrayList<>();
+
+        for (Chassis record: all)
+        {
+            if (record.isActive().intValue() == 1)
+                allActiveRecords.add(record);
+        }
+        return allActiveRecords;
     }
 }

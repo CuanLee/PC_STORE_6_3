@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import java.util.ArrayList;
 import java.util.Set;
 
+import cuanlee.pc_store.database.database.GlobalContext;
 import cuanlee.pc_store.database.util.App;
 import cuanlee.pc_store.domain.PC.GPU;
 import cuanlee.pc_store.repository.PC.GPURepository;
@@ -19,7 +21,6 @@ import cuanlee.pc_store.services.PC.GPUService;
  */
 public class GPUServiceImpl extends Service implements GPUService {
     final private GPURepository gpuRepository;
-
     private static GPUServiceImpl service = null;
 
     public static GPUServiceImpl getInstance() {
@@ -44,15 +45,12 @@ public class GPUServiceImpl extends Service implements GPUService {
 
     private GPUServiceImpl()
     {
-        gpuRepository = new GPURepositoryImpl(App.getAppContext());
+        gpuRepository = new GPURepositoryImpl(GlobalContext.getAppContext());
     }
 
     @Override
     public GPU addGPU(GPU gpu) {
-        if(duplicateCheck(gpu) == false)
             return gpuRepository.save(gpu);
-        else
-            return null;
     }
 
     @Override
@@ -70,10 +68,9 @@ public class GPUServiceImpl extends Service implements GPUService {
 
     @Override
     public GPU updateGPU(GPU gpu) {
-        if(duplicateCheck(gpu) == false)
+
             return gpuRepository.update(gpu);
-        else
-            return null;
+
     }
 
     @Override
@@ -96,5 +93,30 @@ public class GPUServiceImpl extends Service implements GPUService {
     @Override
     public int deleteAllGPU() {
         return gpuRepository.deleteAll();
+    }
+
+    @Override
+    public int getTotalStock() {
+        Set<GPU> all = gpuRepository.findAll();
+        int totalStock = 0;
+
+        for (GPU record: all)
+        {
+            totalStock = totalStock + record.getStock().intValue();
+        }
+        return totalStock;
+    }
+
+    @Override
+    public ArrayList<GPU> getAllActive() {
+        Set<GPU> all = gpuRepository.findAll();
+        ArrayList<GPU> allActiveRecords = new ArrayList<>();
+
+        for (GPU record: all)
+        {
+            if (record.isActive().intValue() == 1)
+                allActiveRecords.add(record);
+        }
+        return allActiveRecords;
     }
 }

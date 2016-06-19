@@ -8,6 +8,7 @@ import android.os.IBinder;
 import java.util.HashSet;
 import java.util.Set;
 
+import cuanlee.pc_store.database.database.GlobalContext;
 import cuanlee.pc_store.database.util.App;
 import cuanlee.pc_store.domain.Employee.Employee;
 import cuanlee.pc_store.repository.Employee.EmployeeRepository;
@@ -45,14 +46,14 @@ public class EmployeeServiceImpl extends Service implements EmployeeService {
         }
     }
 
-    private EmployeeServiceImpl()
+    public EmployeeServiceImpl()
     {
-        employeeRepository = new EmployeeRepositoryImpl(App.getAppContext());
+        employeeRepository = new EmployeeRepositoryImpl(GlobalContext.getAppContext());
     }
 
     @Override
-    public String updatePassword(Employee employee) {
-        return null;
+    public Employee getEmployee(Long employeeId) {
+        return employeeRepository.findById(employeeId);
     }
 
     @Override
@@ -90,5 +91,28 @@ public class EmployeeServiceImpl extends Service implements EmployeeService {
                 duplicate = true;
         }
         return duplicate;
+    }
+
+    @Override
+    public boolean duplicateEmail(Employee employeeEntity) {
+        Set<Employee> allEmployee = employeeRepository.findAll();
+        boolean duplicate = false;
+
+        for (Employee employee: allEmployee)
+        {
+            if (employeeEntity.getContactDetails().getEmail().equalsIgnoreCase(employee.getContactDetails().getEmail()))
+                duplicate = true;
+        }
+        return duplicate;
+    }
+
+    @Override
+    public Employee deleteEmployee(Employee employee) {
+        return employeeRepository.delete(employee);
+    }
+
+    @Override
+    public Employee addEmployee(Employee employee) {
+        return employeeRepository.save(employee);
     }
 }

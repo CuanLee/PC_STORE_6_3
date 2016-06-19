@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import java.util.ArrayList;
 import java.util.Set;
 
+import cuanlee.pc_store.database.database.GlobalContext;
 import cuanlee.pc_store.database.util.App;
 import cuanlee.pc_store.domain.PC.CPU;
 import cuanlee.pc_store.repository.PC.CPURepository;
@@ -44,15 +46,12 @@ public class CPUServiceImpl extends Service implements CPUService {
 
     private CPUServiceImpl()
     {
-        cpuRepository = new CPURepositoryImpl(App.getAppContext());
+        cpuRepository = new CPURepositoryImpl(GlobalContext.getAppContext());
     }
 
     @Override
     public CPU addCPU(CPU cpu) {
-        if(duplicateCheck(cpu) == false)
             return cpuRepository.save(cpu);
-        else
-            return null;
     }
 
     @Override
@@ -70,10 +69,7 @@ public class CPUServiceImpl extends Service implements CPUService {
 
     @Override
     public CPU updateCPU(CPU cpu) {
-        if(duplicateCheck(cpu) == false)
             return cpuRepository.update(cpu);
-        else
-            return null;
     }
 
     @Override
@@ -86,6 +82,31 @@ public class CPUServiceImpl extends Service implements CPUService {
         Set<CPU> cpu;
         cpu = cpuRepository.findAll();
         return cpu;
+    }
+
+    @Override
+    public int getTotalStock() {
+        Set<CPU> all = cpuRepository.findAll();
+        int totalStock = 0;
+
+        for (CPU record: all)
+        {
+            totalStock = totalStock + record.getStock().intValue();
+        }
+        return totalStock;
+    }
+
+    @Override
+    public ArrayList<CPU> getAllActive() {
+        Set<CPU> all = cpuRepository.findAll();
+        ArrayList<CPU> allActiveRecords = new ArrayList<>();
+
+        for (CPU record: all)
+        {
+            if (record.isActive().intValue() == 1)
+                allActiveRecords.add(record);
+        }
+        return allActiveRecords;
     }
 
     @Override
